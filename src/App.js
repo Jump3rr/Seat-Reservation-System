@@ -4,6 +4,7 @@ import './App.css';
 import {FirstPage} from './features/firstPage/firstPage';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {Seats} from './features/seats/seats';
+import {ConfirmationPage} from './features/confirmationPage/confirmation';
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
               <Seats />
             </Route>
             <Route path="/confirmation" exact>
-              <FirstPage />
+              <ConfirmationPage />
             </Route>
           </Switch>
         </header>

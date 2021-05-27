@@ -5,11 +5,21 @@ import { IState } from "../seatsReducer";
 import { ISeatsReducer } from "../seatsReducer/seatsReducer";
 
 import { getSeats } from "../../actions/seatsActions";
+import {ButtonSelect} from "./selectButton";
 
 type GetSeats = ReturnType<typeof getSeats>;
 
+const Info = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 5vh;
+  justify-content: center;
+`;
+
 const Hall = styled.div`
-  background-color: blue;
+  background-color: white;
   margin-top: 10px;
   width: 90%;
   display: flex;
@@ -28,6 +38,11 @@ const SeatDiv = styled.div`
   background-color: white;
   margin: 0.5vw;
   position: relative;
+  
+  &:hover {
+    background-color: #ffdc91;
+    cursor: pointer;
+  }
 `;
 const ReservedSeat = styled.div`
   width: 5vw;
@@ -39,6 +54,16 @@ const ReservedSeat = styled.div`
   background-color: grey;
   margin: 0.5vw;
 `;
+const ChoosedSeat = styled.div`
+  width: 5vw;
+  height: 5vh;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 10px;
+  text-align: center;
+  background-color: #ffae00;
+  margin: 0.5vw;
+`;
 const NextToEachOther = styled.div`
   display: flex;
 `;
@@ -46,7 +71,6 @@ const SeatDivEmpty = styled.div`
   width: 5vw;
   height: 5vh;
   text-align: center;
-  background-color: blue;
   margin: 0.5vw;
 
 `;
@@ -80,7 +104,6 @@ export const Seats = () => {
 
   return (
     <Hall>
-      
       {seatsList?.length > 0 &&
           seatsList.map((seat, index, array) => {
             if(index>0){
@@ -163,6 +186,13 @@ export const Seats = () => {
               )
             }
           })}
+
+          <Info>
+            <SeatDiv /> Miejsce dostępne 
+            <ReservedSeat />Miejsce zarezerwowane 
+            <ChoosedSeat /> Twój wybór 
+            <ButtonSelect />
+          </Info>
     </Hall>
   );
 }
