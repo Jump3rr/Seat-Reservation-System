@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
-import seats, { ISeatsReducer } from "../features/seatsReducer/seatsReducer";
+import counterReducer from "../Components/counter/counterSlice";
+import seats, {ISeatsReducer} from "../reducers/seatsReducer"
 
 export const store = configureStore({
   reducer: {
@@ -13,13 +13,3 @@ export const store = configureStore({
 export interface IState {
   seats: ISeatsReducer;
 }
-
-// import { createStore, applyMiddleware } from "redux";
-// import thunk from "redux-thunk";
-
-// import reducers from '../features/seatsReducer';
-
-// const store = createStore(reducers, applyMiddleware(thunk));
-
-// export default store;
-

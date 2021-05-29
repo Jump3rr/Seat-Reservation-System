@@ -1,10 +1,10 @@
 import React from 'react';
 // import { Counter } from './features/counter/Counter';
 import './App.css';
-import {FirstPage} from './features/firstPage/firstPage';
+import {FirstPage} from './Components/firstPage/firstPage';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import {Seats} from './features/seats/seats';
-import {ConfirmationPage} from './features/confirmationPage/confirmation';
+import {Seats} from './Components/seats/seats';
+import {ConfirmationPage} from './Components/confirmationPage/confirmationPage';
 
 function App() {
   return (

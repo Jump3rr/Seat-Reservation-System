@@ -1,13 +1,18 @@
 import react, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from "react-redux";
-import { IState } from "../seatsReducer";
-import { ISeatsReducer } from "../seatsReducer/seatsReducer";
-
-import { getSeats } from "../../actions/seatsActions";
-import {ButtonSelect} from "./selectButton";
+import {IState} from "../../reducers";
+import { ISeatsReducer } from "../../reducers/seatsReducer";
+import { getSeats } from "../../Actions/seatsActions";
+import { addSeats} from "../../Actions/choosedSeatsActions";
+import { getChoosedSeats} from "../../Actions/choosedSeatsActions";
+import { ButtonSelect } from "./selectButton";
+import { IChoosedSeatsReducer } from "../../reducers/choosedSeatsReducer";
 
 type GetSeats = ReturnType<typeof getSeats>;
+type AddToChoosen = ReturnType<typeof addSeats>;
+type GetChoosedSeats = ReturnType<typeof getChoosedSeats>;
+
 
 const Info = styled.div`
   display: flex;
@@ -80,13 +85,14 @@ export const Seats = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch<GetSeats>(getSeats());
+    dispatch<AddToChoosen>(addSeats());
+    dispatch<GetChoosedSeats>(getChoosedSeats());
   }, []);
 
-    const { seatsList } = useSelector<IState, ISeatsReducer>((globalState) => ({
-    ...globalState.seats
+    const { seatsList, seats } = useSelector<IState, ISeatsReducer & IChoosedSeatsReducer>((globalState) => ({
+    ...globalState.seats,
+    ...globalState.choosedSeats
   }));
-  let x=0;
-  let y=0;
 
   function createTable (position: number) {
     let table = []
@@ -100,6 +106,12 @@ export const Seats = () => {
     }
     return table
   }
+  function addToSelected (seat: string) {
+    console.log(seat);
+    console.log("DODANE");
+    addSeats();
+    console.log(seat);
+  }
 
 
   return (
@@ -111,7 +123,7 @@ export const Seats = () => {
                 if(seat.reserved) {
                   return <ReservedSeat />
                 } else {
-                return <SeatDiv />
+                return <SeatDiv onClick={()=>{addToSelected(array[index].id)}}/>
                 }
               }
               else if(array[index].cords.x !== array[index-1].cords.x) {
@@ -126,7 +138,7 @@ export const Seats = () => {
                   return (
                     <NextToEachOther>
                       {createTable(array[index].cords.y)}
-                      <SeatDiv />
+                      <SeatDiv onClick={()=>{addToSelected(array[index].id)}}/>
                     </NextToEachOther>
                   )
                 }
@@ -142,20 +154,21 @@ export const Seats = () => {
                 }else {
                   return (
                     <NextToEachOther>
-                      <SeatDiv />
+                      {/* <SeatDiv onClick={addToSelected}/> */}
+                      <SeatDiv onClick={()=>{addToSelected(array[index].id)}} />
                       {createTable(14-array[index].cords.y)}
                     </NextToEachOther>
                   )
                 }
               }
-              else if(array[index].cords.y-array[index-1].cords.y === 1 && array[index].cords.x === array[index].cords.x) {
+              else if(array[index].cords.y-array[index-1].cords.y === 1 && array[index].cords.x === array[index-1].cords.x) {
                 if(seat.reserved) {
                   return (
                     <ReservedSeat />
                   )
                 } else {
                   return (
-                    <SeatDiv />
+                    <SeatDiv onClick={()=>{addToSelected(array[index].id)}}></SeatDiv>
                   )
                 }
               }
@@ -171,7 +184,7 @@ export const Seats = () => {
                 return (
                   <NextToEachOther>
                     {createTable(array[index].cords.y-array[index-1].cords.y-1)}
-                    <SeatDiv />
+                    <SeatDiv onClick={()=>{addToSelected(array[index].id)}}/>
                   </NextToEachOther>
                 )
                 }
@@ -181,12 +194,18 @@ export const Seats = () => {
               return (
                 <NextToEachOther>
                 {createTable(array[index].cords.y)}
-                <SeatDiv></SeatDiv>
+                <SeatDiv onClick={()=>{addToSelected(array[index].id)}} />
                 </NextToEachOther>
               )
             }
           })}
-
+          {/* <SeatPicker 
+            rows={seatsList}
+            aplha
+            visible
+            selectedByDefault
+            loading={false}
+            /> */}
           <Info>
             <SeatDiv /> Miejsce dostępne 
             <ReservedSeat />Miejsce zarezerwowane 

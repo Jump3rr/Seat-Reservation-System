@@ -1,4 +1,4 @@
-import { ISeat } from "../features/seats/ISeat";
+import {ISeat} from "../Components/seats/ISeats"
 
 export const GET_SEATS = "GET_SEATS";
 
