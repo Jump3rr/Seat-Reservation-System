@@ -5,12 +5,12 @@ export const REMOVE_SEAT = "ADD_SEAT";
 
 export interface IChoosedSeatsTypes {
   GET_SEATS: {
-    seats: ISeat[];
+    seats: string[];
   };
   ADD_SEAT: {
-    seats: ISeat[];
+    seats: string[]//ISeat[];
   };
   REMOVE_SEAT: {
-    seats: ISeat[];
+    seats: string[];
   };
 }

@@ -14,9 +14,9 @@ import { render } from '@testing-library/react';
 export const Input = () => {
   const count = useSelector(selectCount);
   const dispatch = useDispatch();
-  const [incrementAmount, setIncrementAmount] = useState('2');
+  //const [incrementAmount, setIncrementAmount] = useState('2');
 
-  const incrementValue = Number(incrementAmount) || 0;
+  //const incrementValue = Number(incrementAmount) || 0;
 
   function onChange(value) {
     console.log('changed', value);

@@ -1,16 +1,26 @@
 import react, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from "react-redux";
-import {IState} from "../../reducers";
+import {IState, store} from "../../reducers";
 import { ISeatsReducer } from "../../reducers/seatsReducer";
 import { getSeats } from "../../Actions/seatsActions";
 import { addSeats} from "../../Actions/choosedSeatsActions";
 import { getChoosedSeats} from "../../Actions/choosedSeatsActions";
 import { ButtonSelect } from "./selectButton";
-import { IChoosedSeatsReducer } from "../../reducers/choosedSeatsReducer";
+//import { IChoosedSeatsReducer } from "../../reducers/choosedSeatsReducer";
+import { ThunkDispatch } from 'redux-thunk';
+import { createSelector } from "reselect";
+//import { makeSelectSeats } from "../../reducers/choosedSelector";
+import * as actionTypes from "../../Actions/choosedSeatsTypes";
+
+import {
+  addSeat,
+  removeSeat,
+  selectSeats,
+} from '../selected/selectedSlice';
 
 type GetSeats = ReturnType<typeof getSeats>;
-type AddToChoosen = ReturnType<typeof addSeats>;
+//type AddToChoosen = ReturnType<typeof addSeats>;
 type GetChoosedSeats = ReturnType<typeof getChoosedSeats>;
 
 
@@ -82,16 +92,26 @@ const SeatDivEmpty = styled.div`
 
 export const Seats = () => {
 
+  const selectedSeats = useSelector(selectSeats);
+
+  // const stateSelector = createSelector(makeSelectSeats, (seats) => ({
+  //   seats,
+  // }))
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch<GetSeats>(getSeats());
-    dispatch<AddToChoosen>(addSeats());
+    //dispatch<AddToChoosen>(addSeats(""));
     dispatch<GetChoosedSeats>(getChoosedSeats());
   }, []);
+  
 
-    const { seatsList, seats } = useSelector<IState, ISeatsReducer & IChoosedSeatsReducer>((globalState) => ({
+  // const actionDispatch = (dispatch:any) => ({
+  //   addSeats: (seats:any) => dispatch(addSeats(seats)),
+  // })
+
+    const { seatsList } = useSelector<IState, ISeatsReducer>((globalState) => ({
     ...globalState.seats,
-    ...globalState.choosedSeats
   }));
 
   function createTable (position: number) {
@@ -106,13 +126,25 @@ export const Seats = () => {
     }
     return table
   }
-  function addToSelected (seat: string) {
-    console.log(seat);
-    console.log("DODANE");
-    addSeats();
-    console.log(seat);
-  }
 
+  const addToSelected = (seat: any) => {  
+    if(selectedSeats.length>0) {
+
+      let index = selectedSeats.indexOf(seat.id);
+
+      if(index !== -1) {
+        dispatch(removeSeat(index));
+      }
+      else {
+        dispatch(addSeat(seat.id));
+      }
+    } 
+    else {
+      dispatch(addSeat(seat.id));
+    }
+  
+    console.log(selectedSeats);
+  }
 
   return (
     <Hall>
@@ -168,7 +200,14 @@ export const Seats = () => {
                   )
                 } else {
                   return (
-                    <SeatDiv onClick={()=>{addToSelected(array[index].id)}}></SeatDiv>
+                   // <SeatDiv onClick={()=>{addToSelected(array[index].id)}}></SeatDiv>
+                  <SeatDiv onClick={() => addToSelected(array[index])}>TUTAJ</SeatDiv>
+                  //  <SeatDiv 
+                  //  onClick={() => {
+                  //   store.dispatch({
+                  //     type: "ADD_SEAT",
+                  //     seat: array[index].id,
+                  //   });console.log(seats);console.log(count)}}> TUTAJ</SeatDiv>
                   )
                 }
               }
