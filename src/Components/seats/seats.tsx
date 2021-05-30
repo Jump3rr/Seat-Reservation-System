@@ -7,10 +7,9 @@ import { getSeats } from "../../Actions/seatsActions";
 import { addSeats} from "../../Actions/choosedSeatsActions";
 import { getChoosedSeats} from "../../Actions/choosedSeatsActions";
 import { ButtonSelect } from "./selectButton";
-//import { IChoosedSeatsReducer } from "../../reducers/choosedSeatsReducer";
 import { ThunkDispatch } from 'redux-thunk';
 import { createSelector } from "reselect";
-//import { makeSelectSeats } from "../../reducers/choosedSelector";
+import { selectCount } from '../counter/counterSlice';
 import * as actionTypes from "../../Actions/choosedSeatsTypes";
 
 import {
@@ -20,8 +19,8 @@ import {
 } from '../selected/selectedSlice';
 
 type GetSeats = ReturnType<typeof getSeats>;
-//type AddToChoosen = ReturnType<typeof addSeats>;
 type GetChoosedSeats = ReturnType<typeof getChoosedSeats>;
+
 
 
 const Info = styled.div`
@@ -93,22 +92,14 @@ const SeatDivEmpty = styled.div`
 export const Seats = () => {
 
   const selectedSeats = useSelector(selectSeats);
-
-  // const stateSelector = createSelector(makeSelectSeats, (seats) => ({
-  //   seats,
-  // }))
+  const count = useSelector(selectCount);
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch<GetSeats>(getSeats());
-    //dispatch<AddToChoosen>(addSeats(""));
     dispatch<GetChoosedSeats>(getChoosedSeats());
   }, []);
   
-
-  // const actionDispatch = (dispatch:any) => ({
-  //   addSeats: (seats:any) => dispatch(addSeats(seats)),
-  // })
 
     const { seatsList } = useSelector<IState, ISeatsReducer>((globalState) => ({
     ...globalState.seats,
@@ -133,18 +124,45 @@ export const Seats = () => {
       let index = selectedSeats.indexOf(seat.id);
 
       if(index !== -1) {
+        let element = document.getElementById(seat.id);
+        if(element != null) {
+          element.style.backgroundColor="";
+        }
         dispatch(removeSeat(index));
       }
-      else {
+      else if(selectedSeats.length < count) {
+        let element = document.getElementById(seat.id);
+        if(element != null) {
+          element.style.backgroundColor="#ffae00";
+        }
         dispatch(addSeat(seat.id));
       }
     } 
     else {
+      let element = document.getElementById(seat.id);
+      if(element != null) {
+        element.style.backgroundColor="#ffae00";
+      }
       dispatch(addSeat(seat.id));
     }
-  
-    console.log(selectedSeats);
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+    let max = count-selectedSeats.length;
+    if(seatsList?.length > 0 && selectedSeats.length<count) {
+      for(let i=0; i<max; i++) {
+        let selectedNbr = Math.floor(Math.random() * (seatsList.length));
+        if(seatsList[selectedNbr].reserved===false && selectedSeats?.indexOf(seatsList[selectedNbr].id) === -1) {
+          addToSelected(seatsList[selectedNbr]);
+        }
+        else if(seatsList[selectedNbr].reserved===true) {
+          max = max+1;
+        }
+      }
+    }
+  }, 200);
+  }, [seatsList]);
 
   return (
     <Hall>
@@ -155,7 +173,7 @@ export const Seats = () => {
                 if(seat.reserved) {
                   return <ReservedSeat />
                 } else {
-                return <SeatDiv onClick={()=>{addToSelected(array[index].id)}}/>
+                return <SeatDiv onClick={() => addToSelected(array[index])} id={array[index].id}/>
                 }
               }
               else if(array[index].cords.x !== array[index-1].cords.x) {
@@ -170,7 +188,7 @@ export const Seats = () => {
                   return (
                     <NextToEachOther>
                       {createTable(array[index].cords.y)}
-                      <SeatDiv onClick={()=>{addToSelected(array[index].id)}}/>
+                      <SeatDiv onClick={() => addToSelected(array[index])} id={array[index].id}/>
                     </NextToEachOther>
                   )
                 }
@@ -186,8 +204,7 @@ export const Seats = () => {
                 }else {
                   return (
                     <NextToEachOther>
-                      {/* <SeatDiv onClick={addToSelected}/> */}
-                      <SeatDiv onClick={()=>{addToSelected(array[index].id)}} />
+                      <SeatDiv onClick={() => addToSelected(array[index])}  id={array[index].id}/>
                       {createTable(14-array[index].cords.y)}
                     </NextToEachOther>
                   )
@@ -200,14 +217,7 @@ export const Seats = () => {
                   )
                 } else {
                   return (
-                   // <SeatDiv onClick={()=>{addToSelected(array[index].id)}}></SeatDiv>
-                  <SeatDiv onClick={() => addToSelected(array[index])}>TUTAJ</SeatDiv>
-                  //  <SeatDiv 
-                  //  onClick={() => {
-                  //   store.dispatch({
-                  //     type: "ADD_SEAT",
-                  //     seat: array[index].id,
-                  //   });console.log(seats);console.log(count)}}> TUTAJ</SeatDiv>
+                  <SeatDiv onClick={() => addToSelected(array[index])} id={array[index].id}></SeatDiv>
                   )
                 }
               }
@@ -223,7 +233,7 @@ export const Seats = () => {
                 return (
                   <NextToEachOther>
                     {createTable(array[index].cords.y-array[index-1].cords.y-1)}
-                    <SeatDiv onClick={()=>{addToSelected(array[index].id)}}/>
+                    <SeatDiv onClick={() => addToSelected(array[index])} id={array[index].id}/>
                   </NextToEachOther>
                 )
                 }
@@ -233,18 +243,11 @@ export const Seats = () => {
               return (
                 <NextToEachOther>
                 {createTable(array[index].cords.y)}
-                <SeatDiv onClick={()=>{addToSelected(array[index].id)}} />
+                <SeatDiv onClick={() => addToSelected(array[index])} id={array[index].id}/>
                 </NextToEachOther>
               )
             }
           })}
-          {/* <SeatPicker 
-            rows={seatsList}
-            aplha
-            visible
-            selectedByDefault
-            loading={false}
-            /> */}
           <Info>
             <SeatDiv /> Miejsce dostępne 
             <ReservedSeat />Miejsce zarezerwowane 
@@ -252,5 +255,6 @@ export const Seats = () => {
             <ButtonSelect />
           </Info>
     </Hall>
+    
   );
 }
