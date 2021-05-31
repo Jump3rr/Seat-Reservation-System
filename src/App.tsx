@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Counter } from './features/counter/Counter';
 import './App.css';
 import {FirstPage} from './Components/firstPage/firstPage';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
@@ -9,7 +8,6 @@ import {ConfirmationPage} from './Components/confirmationPage/confirmationPage';
 function App() {
   return (
     <Router>
-      {/* <Counter /> */}
       <div className="App">
         <header className="App-header">
           <Switch>

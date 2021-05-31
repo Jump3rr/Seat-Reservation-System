@@ -16,7 +16,7 @@ export default (state = defaultState(), action: any) => {
       const paylod: actionTypes.ISeatsTypes["GET_SEATS"] = action;
       return {
         ...state,
-        seatsList: paylod.seatsList
+        seatsList: paylod.seatsList,
       };
     }
     default: {

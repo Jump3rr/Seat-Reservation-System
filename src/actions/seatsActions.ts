@@ -1,6 +1,5 @@
 import { Dispatch } from "redux";
 import * as actionTypes from "./seatsTypes";
-import seatsReducer from "../reducers/seatsReducer"
 import {ISeat} from "../Components/seats/ISeats"
 
 

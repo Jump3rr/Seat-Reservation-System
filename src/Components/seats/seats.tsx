@@ -4,14 +4,10 @@ import { useSelector, useDispatch } from "react-redux";
 import {IState, store} from "../../reducers";
 import { ISeatsReducer } from "../../reducers/seatsReducer";
 import { getSeats } from "../../Actions/seatsActions";
-import { addSeats} from "../../Actions/choosedSeatsActions";
-import { getChoosedSeats} from "../../Actions/choosedSeatsActions";
 import { ButtonSelect } from "./selectButton";
-import { ThunkDispatch } from 'redux-thunk';
-import { createSelector } from "reselect";
 import { selectCount } from '../counter/counterSlice';
-import * as actionTypes from "../../Actions/choosedSeatsTypes";
-
+import { isChecked } from "../counter/counterSlice";
+import { Colors } from "../../styledHelpers/Colors";
 import {
   addSeat,
   removeSeat,
@@ -19,12 +15,9 @@ import {
 } from '../selected/selectedSlice';
 
 type GetSeats = ReturnType<typeof getSeats>;
-type GetChoosedSeats = ReturnType<typeof getChoosedSeats>;
-
-
 
 const Info = styled.div`
-  display: flex;
+  display: flex; 
   width: 100%;
   flex-direction: row;
   flex-wrap: wrap;
@@ -33,14 +26,19 @@ const Info = styled.div`
 `;
 
 const Hall = styled.div`
-  background-color: white;
+  background-color: ${Colors.white};
   margin-top: 10px;
   width: 90%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  position: absolute;
+  height: auto;
+
+  @media (max-height: 465px) {
+    width: 60vw;
+    height: auto;
+  }
 `;
 const SeatDiv = styled.div`
   width: 5vw;
@@ -49,14 +47,30 @@ const SeatDiv = styled.div`
   border-width: 2px;
   border-radius: 10px;
   text-align: center;
-  background-color: white;
+  background-color: ${Colors.white};
   margin: 0.5vw;
   position: relative;
   
   &:hover {
-    background-color: #ffdc91;
+    background-color: ${Colors.hover};
     cursor: pointer;
   }
+  @media (max-height: 465px) {
+    width: 3vw;
+    height: 3vh;
+    border-width: 1px;
+  }
+`;
+const SeatDivInfo = styled.div`
+  width: 5vw;
+  height: 5vh;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 10px;
+  text-align: center;
+  background-color: ${Colors.white};
+  margin: 0.5vw;
+  position: relative;
 `;
 const ReservedSeat = styled.div`
   width: 5vw;
@@ -65,8 +79,14 @@ const ReservedSeat = styled.div`
   border-width: 2px;
   border-radius: 10px;
   text-align: center;
-  background-color: grey;
+  background-color: ${Colors.grey};
   margin: 0.5vw;
+
+  @media (max-height: 465px) {
+    width: 3vw;
+    height: 3vh;
+    border-width: 1px;
+  }
 `;
 const ChoosedSeat = styled.div`
   width: 5vw;
@@ -75,8 +95,13 @@ const ChoosedSeat = styled.div`
   border-width: 2px;
   border-radius: 10px;
   text-align: center;
-  background-color: #ffae00;
+  background-color: ${Colors.selected};
   margin: 0.5vw;
+  @media (max-height: 465px) {
+    width: 3vw;
+    height: 3vh;
+    border-width: 1px;
+  }
 `;
 const NextToEachOther = styled.div`
   display: flex;
@@ -86,6 +111,11 @@ const SeatDivEmpty = styled.div`
   height: 5vh;
   text-align: center;
   margin: 0.5vw;
+  @media (max-height: 465px) {
+    width: 3vw;
+    height: 3vh;
+    border-width: 1px;
+  }
 
 `;
 
@@ -93,11 +123,11 @@ export const Seats = () => {
 
   const selectedSeats = useSelector(selectSeats);
   const count = useSelector(selectCount);
+  const isNextToChecked = useSelector(isChecked);
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch<GetSeats>(getSeats());
-    dispatch<GetChoosedSeats>(getChoosedSeats());
   }, []);
   
 
@@ -151,6 +181,33 @@ export const Seats = () => {
     setTimeout(() => {
     let max = count-selectedSeats.length;
     if(seatsList?.length > 0 && selectedSeats.length<count) {
+    if(isNextToChecked) {
+      while(true) {
+        let selectedNbr = Math.floor(Math.random() * (seatsList.length-max));
+        let row = seatsList[selectedNbr].cords.x;
+        let nextToPrev = 0;
+        for(let j = 0; j<max; j++) {
+          if(seatsList[selectedNbr+j].reserved===false && seatsList[selectedNbr+j].cords.x === row)
+          {
+            if (j + 1 < max) {
+              if (
+                seatsList[selectedNbr + j + 1].cords.y -
+                  seatsList[selectedNbr + j].cords.y ===
+                1
+              )
+                nextToPrev = nextToPrev + 1;
+            } else nextToPrev = nextToPrev + 1;
+          }
+        }
+        if(nextToPrev===max) {
+          for(let j = 0; j<max; j++) {
+            addToSelected(seatsList[selectedNbr+j]);
+          }
+          break;
+        }
+    }
+    }
+    else {
       for(let i=0; i<max; i++) {
         let selectedNbr = Math.floor(Math.random() * (seatsList.length));
         if(seatsList[selectedNbr].reserved===false && selectedSeats?.indexOf(seatsList[selectedNbr].id) === -1) {
@@ -161,6 +218,7 @@ export const Seats = () => {
         }
       }
     }
+  }
   }, 200);
   }, [seatsList]);
 
@@ -249,7 +307,7 @@ export const Seats = () => {
             }
           })}
           <Info>
-            <SeatDiv /> Miejsce dostępne 
+            <SeatDivInfo /> Miejsce dostępne 
             <ReservedSeat />Miejsce zarezerwowane 
             <ChoosedSeat /> Twój wybór 
             <ButtonSelect />
