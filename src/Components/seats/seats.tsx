@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from "react-redux";
 import {IState, store} from "../../reducers";
 import { ISeatsReducer } from "../../reducers/seatsReducer";
-import { getSeats } from "../../Actions/seatsActions";
+import { getSeats } from "../../actions/seatsActions";
 import { ButtonSelect } from "./selectButton";
 import { selectCount } from '../counter/counterSlice';
 import { isChecked } from "../counter/counterSlice";

@@ -1,5 +1,5 @@
 import { ISeat } from "../Components/seats/ISeats";
-import * as actionTypes from "../Actions/seatsTypes";
+import * as actionTypes from "../actions/seatsTypes";
 
 export interface ISeatsReducer {
   seatsList: ISeat[];
